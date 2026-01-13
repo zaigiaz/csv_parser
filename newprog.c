@@ -22,7 +22,7 @@ int main(void) {
   while(!feof(file))
     {
       c = fgetc(file);
-      if(c == '\n')
+      if(c == NEWLINE)
 	{
 	  lines += 1;
 	}
@@ -31,20 +31,26 @@ int main(void) {
 
   printf("Lines: %d\n", lines);
   struct fields list[lines];
+
   char buffer[256];
-  size_t len;
+  buffer[0] = '\0';
+  size_t len=0;
 
   // reset file pointer back to start of file
   fseek(file, 0, SEEK_SET);
 
-  char ch; 
+  char ch;
   int field_count=0;
 
   while((ch = fgetc(file)) != EOF) {    
 
     if(ch == FIELD_SEP) {
 
+      // null terminating string must have terminator
+      buffer[len++] = '\0';
       printf("\nhere is a field: %s", buffer);
+      buffer[0] = '\0';
+      len = 0;
 
       /* switch(field_count) { */
       /* case 1: */
@@ -55,25 +61,27 @@ int main(void) {
       /* 	lines[counter].date = build; */
       /* } */
 
-      field_count += 1;
       continue;
     }
 
     if(ch == NEWLINE) {
       /* counter += 1; */
+
+      buffer[len++] = '\0';
       printf("\nhere is a field: %s", buffer);
       buffer[0] = '\0';
+      len = 0;
+
       continue;
      }
 
     // build the string here
-    buffer[len++] = (char)c;
     
+    buffer[len++] = ch;
+    /* printf("%c", ch); */
 
-  printf("%c", ch);
   }
 
-  printf("\nfield_count: %d", field_count);
   int close = fclose(file);
   if(close == EOF) { printf("error at closing"); exit(1); }
 
