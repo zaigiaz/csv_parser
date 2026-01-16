@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #define FIELD_SEP ','
 #define NEWLINE '\n'
 #define BUF_SIZE 256
 
-// TODO: Add Data into Array of Structs
 // TODO: Add Helper Functions to convert to int or float if needed
-// TODO: add some Asserts and test cases to ensure code reliability
+// TODO: use isdigit() and other function to have better functionality
 
 struct fields {
   char name[BUF_SIZE];
@@ -17,14 +17,24 @@ struct fields {
   /* char EXAMPLE_FIELD[BUF_SIZE]; */
 };
 
-int main(void) {
 
-  FILE *file = fopen("file.csv", "r");
-  
+// print all the rows in CSV
+void print_file(struct fields list[BUF_SIZE], int lines) {  
+  printf("\nPrinting out All Fields | Debug\n\n");
+
+  for(int i=0; i<lines; i++) {
+    printf("-------------\n");
+    printf("%s\n", list[i].name);
+    printf("%s\n", list[i].age);
+    printf("%s\n", list[i].date);
+  }  
+}
+
+// get # of lines in csv file, could change by subtracting one if csv has header defining fields
+int getNumberItems(FILE *file) {
   int lines=0;
   char c;
 
-  // get number of lines in file
   while(!feof(file))
     {
       c = fgetc(file);
@@ -33,8 +43,23 @@ int main(void) {
 	  lines += 1;
 	}
     }
+  assert(lines > 0);
 
-  /* printf("Lines: %d\n", lines); */
+  return lines;
+}
+
+
+ int main(void) {
+
+  FILE *file = fopen("file.csv", "r");
+    if(file == NULL) {
+    perror("file pointer for provided csv is null");
+  }
+
+  int lines=0;
+
+  // get number of lines in file
+  lines = getNumberItems(file);
   
   // array of fields that hold all data for CSV
   struct fields list[lines];
@@ -47,59 +72,52 @@ int main(void) {
   fseek(file, 0, SEEK_SET);
 
   char ch;
-  int list_count=0, count=0;
+  int row_count=0, char_point=0;
 
   while((ch = fgetc(file)) != EOF) {    
 
     if(ch == FIELD_SEP) {
-      /* printf("\nhere is a field: %s", buffer); */
-
       // null terminating string must have terminator
-      count += 1;
+      char_point += 1;
       buffer[len++] = '\0';
 
-      switch(count) {
+      switch(char_point) {
       case 1:
-	/* logic here to strcpy buffer into struct field */
-	strcpy(list[list_count].name, buffer);
+	strcpy(list[row_count].name, buffer);
 	break;
       case 2:
-	strcpy(list[list_count].age, buffer);
+	strcpy(list[row_count].age, buffer);
 	break;      
       }
       
       buffer[0] = '\0';
       len = 0;
+
       continue;
     }
 
     if(ch == NEWLINE) {
-
       // only increment list 
-      count = 0;
-
-      /* printf("\nhere is a field: %s", buffer); */
+      char_point = 0;
 
       buffer[len++] = '\0';
-      strcpy(list[list_count].date, buffer);
+      strcpy(list[row_count].date, buffer);
       buffer[0] = '\0';
 
-      // reset buffer
+      // reset buffer length
       len = 0;
+      row_count += 1;
 
-      list_count += 1;
       continue;
      }
 
-
-
     // build the string here
     buffer[len++] = ch;
-
   }
 
-  printf("Here is the first field: %s", list[3].age);
-
+  // print all rows in csv
+  print_file(list, lines);
+  
   int close = fclose(file);
-  if(close == EOF) { printf("error at closing"); exit(1); }  
+  if(close == EOF) { perror("error at closing"); }
 }
