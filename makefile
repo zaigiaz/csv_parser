@@ -1,5 +1,5 @@
 target:
-	cc newprog.c -o newprog -Wall -Wextra -O
-	./newprog
+	cc main.c -o main -Wall -Wextra -O
+	./main
 
 
