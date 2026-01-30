@@ -6,13 +6,8 @@ The schema for this csv file is that you specify the type of data as the first l
 everythig else as just rows of data. This allows cross platform support
 
 # TODO:
-- Add functionality to convert type of data to number or float, or char, etc.
-- This is for computational purposes so the end user doesnt have to directly convert data themselves
-- separate out reading a single line into a function for above functionality?
 - Make casts to 32 bit and 64 bit data types for cross-platform support
-
-# Example file
-string,int,float,char
-John,5,5.5,t
-Isabella,124,1.994,f
-Aaron,100,0.001,t
+- add support to automatically detect type?
+- Memory Map reading and writing to files to support larger files
+- default to given schema as well
+- Investigate why it segfaults on files >2MB
